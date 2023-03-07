@@ -1,0 +1,18 @@
+{
+  "name": "vite-project",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "postinstall": "cp -a ./node_modules/@pdftron/webviewer/public/ ./public/webviewer"
+  },
+  "devDependencies": {
+    "vite": "^4.0.0"
+  },
+  "dependencies": {
+    "@pdftron/webviewer": "^8.11.0"
+  }
+}

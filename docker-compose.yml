@@ -1,0 +1,88 @@
+version: "3.9"
+
+services:
+
+  webviewer-client:
+    image: node:16-slim
+    container_name: webviewer-client
+    working_dir: /app
+    ports:
+      - 1234:5173
+    volumes:
+      - ./client:/app
+    command: [ "sh", "-c", "npm i && npx vite --host" ]
+
+  pdfd-tomcat:
+    image: "pdftron/webviewer-server:2.1.0"
+    container_name: webviewer-server
+    # If performing SSL directly from tomcat, replace the keys in the tc_ssl folder with your own.
+    # This can be left alone if using the load balancer, or handling ssl with any other service.
+    # volumes:
+    #  - ./tc_ssl:/usr/local/apache-tomcat/conf/ssl
+    # uncomment this and place any self signed certs your network will use inside of this folder locally
+    #  - ./external_certs:/certs
+    # uncomment to map the static data directory to a drive outside the container
+    # just replace my_external_static_data with the desired externally mapped folder.
+    #  - /files/my_external_data:/usr/local/apache-tomcat/static_data
+    # uncomment to map local data directory to external_resrouces
+    # just replace the local/path to data directory on local file system
+    # volumes:
+    #  - local/path:/usr/local/apache-tomcat/external_resources
+    ulimits:
+      nofile:
+        soft: 64000
+        hard: 64000
+    ports:
+      - 8090:8090
+    environment:
+      # More info about these arguments can be found at:
+      # https://www.pdftron.com/documentation/web/guides/wv-server-config
+      # Place your PDFTron key in this argument.
+      # TRN_PDFNET_KEY: "***"
+      # If set to true, tomcat will include the demo app at localhost:port/demo?s
+      INCLUDE_DEMO: 'false'
+      # Normally the cache cleanup is triggered once there is less than 1Gb
+      # of space remaining on the partition, at which point files that have
+      # not been accessed recently are wiped from the cache.
+      # The following two settings override this behaviour. See here for more information.
+      # https://www.pdftron.com/documentation/web/guides/wv-server-hardware-and-network/#using-the-on-disk-cache
+      # TRN_MAX_CACHE_AGE_MINUTES: 1
+      # Cached content will be cleaned up until the cache occupies less space
+      # than this limit
+      # TRN_MAX_CACHED_MB: 1
+      # Control the cookie WebViewer Server checks for user stickiness.
+      TRN_DEBUG_MODE: 'false'
+      # Set this variable in order securely tie your client to the server. Will default
+      # to any origin if not set.
+      # TRN_ALLOW_ORIGINS:
+      # If it is not, the user will be unable to access the document.
+      TRN_FORCE_URL_RECHECK: 'true'
+      # Force the server to fetch any incoming request at this argument + the incoming link.
+      # TRN_FETCH_DEFAULT_BASE_ADDR: www.mywebsite.com
+      # Set required domains for document fetches
+      # TRN_FETCH_REQUIRED_URL_ROOT: "www.doc.com;www.pdf.com;www.download.com"
+      # Forward same domain cookies between servers on file fetches.
+      # TRN_FORWARD_CLIENT_COOKIES: 'false'
+      # Lock documents to a user session.
+      TRN_ENABLE_SESSION_AUTH: 'true'
+      # Cache documents behind a session id identifier.
+      TRN_ENABLE_PER_SESSION_CACHING: 'true'
+      # Prevent the server from sending the client PDF data directly, using
+      # derived formats like images or .xod instead
+      # TRN_DISABLE_CLIENT_PDF_ACCESS: 'true'
+      # Forces all file fetches to be downgraded to http.
+      # TRN_FETCH_DOWNGRADE_HTTPS: 'false'
+      # # TRN_FETCH_DEFAULT_BASE_ADDR: www.mywebsite.com
+      # Set required domains for document fetches
+      # TRN_FETCH_REQUIRED_URL_ROOTS: "www.doc.com;www.pdf.com;www.download.com"
+      # Forward same domain cookies between servers on file fetches.
+      # TRN_FORWARD_CLIENT_COOKIES: 'false'
+      # Lock documents to a user session.
+      # TRN_ENABLE_SESSION_AUTH: 'false'
+      # Cache documents behind a session id identifier.
+      # TRN_ENABLE_PER_SESSION_CACHING: 'false'
+      # Prevent the server from sending the client PDF data directly, using
+      # derived formats like images or .xod instead
+      # TRN_DISABLE_CLIENT_SIDE_RENDERING: 'true'
+      # Forces all file fetches to be downgraded to http.
+      # TRN_FETCH_DOWNGRADE_HTTPS: 'false'
