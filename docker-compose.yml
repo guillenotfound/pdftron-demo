@@ -66,7 +66,7 @@ services:
       # Lock documents to a user session.
       TRN_ENABLE_SESSION_AUTH: 'true'
       # Cache documents behind a session id identifier.
-      TRN_ENABLE_PER_SESSION_CACHING: 'true'
+      # TRN_ENABLE_PER_SESSION_CACHING: 'true'
       # Prevent the server from sending the client PDF data directly, using
       # derived formats like images or .xod instead
       # TRN_DISABLE_CLIENT_PDF_ACCESS: 'true'
