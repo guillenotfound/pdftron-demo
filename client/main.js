@@ -1,71 +1,65 @@
-import WebViewer from '@pdftron/webviewer'
+import WebViewer from "@pdftron/webviewer";
 
 WebViewer(
   {
-    backendType: 'asm',
-    path: '/public/webviewer',
-    webviewerServerURL: 'http://0.0.0.0:8090',
+    backendType: "asm",
+    path: "/public/webviewer",
+    webviewerServerURL: "http://0.0.0.0:8090",
+    fullAPI: true,
   },
-  document.getElementById('viewer')
+  document.getElementById("viewer")
 ).then((instance) => {
-  const { UI, Core } = instance
-  const { documentViewer } = Core
+  const { UI, Core } = instance;
+  const { documentViewer } = Core;
 
-  document.getElementById('file-selector').onchange = (e) => {
-    asyncLoadDocument(e.target.value)
-  }
+  document.getElementById("file-selector").onchange = (e) => {
+    asyncLoadDocument(e.target.value);
+  };
 
   function asyncLoadDocument(url) {
     fetch(url)
-    .then((res) => res.blob())
-    .then((blob) => {
-      UI.loadDocument(blob, { extension: url.split('.').pop().toLowerCase() })
-    })
+      .then((res) => res.blob())
+      .then((blob) => {
+        UI.loadDocument(blob, {
+          extension: url.split(".").pop().toLowerCase(),
+        });
+      });
   }
 
   function getPDFLink() {
     return documentViewer
       .getDocument()
       .getDownloadLink()
-      .then((res) => res.url)
+      .then((res) => res.url);
   }
 
   function handlePDFPrint() {
-    getPDFLink().then((url) => {
-      const event = new CustomEvent('docwillprint', { detail: url })
-      document.dispatchEvent(event)
-    })
+    getPDFLink()
+      .then((url) => {
+        console.log(url);
+        const event = new CustomEvent("docwillprint", { detail: url });
+        document.dispatchEvent(event);
+      })
+      .catch(console.error);
   }
 
-  // UI.hotkeys.off(UI.hotkeys.Keys.COMMAND_P)
-  // UI.hotkeys.on(UI.hotkeys.Keys.COMMAND_P, (e) => {
-  //   handlePDFPrint()
-  //   e.preventDefault()
-  // })
-  //
-  // UI.hotkeys.off(UI.hotkeys.Keys.CTRL_P)
-  // UI.hotkeys.on(UI.hotkeys.Keys.COMMAND_P, (e) => {
-  //   handlePDFPrint()
-  //   e.preventDefault()
-  // })
-  //
-  // UI.updateElement('printButton', { onClick: () => handlePDFPrint() })
+  UI.updateElement("printButton", { onClick: () => handlePDFPrint() });
 
-  UI.setTheme('dark')
-  UI.disableFeatures([UI.Feature.FilePicker])
+  UI.setTheme("dark");
+  UI.disableFeatures([UI.Feature.FilePicker]);
 
-  UI.setZoomLevel(1)
+  UI.setZoomLevel(1);
 
-  documentViewer.addEventListener('documentLoaded', () => {
+  documentViewer.addEventListener("documentLoaded", () => {
     // call methods relating to the loaded document
     documentViewer
       .getDocument()
       .getMetadata()
       .then((data) => {
-        document.title = data.title || documentViewer.getDocument().filename
-      })
-  })
-})
+        document.title = data.title || documentViewer.getDocument().filename;
+      });
+  });
+});
 
 // import {WebViewerServer} from './WVSApiWrapper'
 
