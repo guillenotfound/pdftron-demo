@@ -26,10 +26,10 @@ WebViewer(
       });
   }
 
-  function getPDFLink() {
+  async function getPDFLink() {
     return documentViewer
       .getDocument()
-      .getDownloadLink()
+      .getPrintablePDF()
       .then((res) => res.url);
   }
 
